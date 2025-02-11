@@ -1,3 +1,5 @@
+// src/lib/syncUser.js
+
 export const syncUser = async (getToken) => {
     try {
       const token = await getToken();
