@@ -1,13 +1,22 @@
 "use client"
 
 import { Button } from "./ui/button";
-import { Menu, MenuIcon } from "lucide-react";
+import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
 
 const Navigation: React.FC = () => {
+  const [isClient, setIsClient] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
@@ -34,10 +43,7 @@ const Navigation: React.FC = () => {
               FAQ
             </Link>
             <Button>
-              <Link
-                href="/dashboard"
-              >
-                <MenuIcon className="md:hidden" />
+              <Link href="/dashboard" className="flex items-center">
                 {true ? 'Dashboard' : 'Get Started'}
               </Link>
             </Button>

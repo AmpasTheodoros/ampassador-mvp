@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback  } from "react";
 import { useAuth, useUser, SignOutButton } from "@clerk/nextjs";
+import { syncUser } from "@/lib/syncUser"; // Adjust path as necessary
 
 interface Task {
   id: string;
@@ -23,10 +24,18 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    async function runSync() {
+      const result = await syncUser(getToken);
+      console.log("Sync result:", result);
+    }
+    runSync();
+  }, [getToken]);
+
   const fetchTasks = useCallback(async () => {
     try {
       const token = await getToken();
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/tasks`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/onboarding/tasks`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
