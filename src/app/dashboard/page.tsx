@@ -123,8 +123,6 @@ export default function Dashboard() {
           </a>
         </div>
       </section>
-
-      {/* Additional sections like compliance alerts could be added here in the future */}
     </div>
   );
 }

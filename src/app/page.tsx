@@ -1,19 +1,27 @@
-"use client";
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import Link from "next/link";
+import Hero from "../components/Hero";
+import Features from "../components/Features";
+import Pricing from "../components/Pricing";
+import Problem from "../components/Problem";
+import Solution from "../components/Solution";
+import Testimonials from "../components/Testimonials";
+import FAQ from "../components/FAQ";
+import CTA from "../components/CTA";
+import Footer from "../components/Footer";
+import GetStarted from "../components/GetStarted";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold">Welcome to Ampassador</h1>
-      <SignedOut>
-        <SignInButton />
-      </SignedOut>
-      <SignedIn>
-        <Link href="/dashboard" className="mt-4 text-blue-500">
-          Go to Dashboard
-        </Link>
-      </SignedIn>
-    </div>
+    <main className="min-h-screen bg-white">
+      <Hero />
+      <Problem />
+      <Solution />
+      <GetStarted />
+      <Features />
+      <Testimonials />
+      <Pricing />
+      <FAQ />
+      <CTA />
+      <Footer />
+  </main>
   );
 }
