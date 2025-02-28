@@ -32,7 +32,7 @@ export default function TemplatesPage() {
         }
         const data = await res.json();
         setTemplates(data.templates || []);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error fetching templates:", err);
         setError("Error fetching templates");
       } finally {

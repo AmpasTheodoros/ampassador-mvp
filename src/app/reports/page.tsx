@@ -1,4 +1,4 @@
-// app/reports/page.tsx
+// app/reports/page.tsx (client component)
 "use client";
 
 import { useState } from "react";
@@ -28,15 +28,10 @@ export default function ReportsPage() {
       }
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "compliance-report.pdf";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err: any) {
+      window.open(url, "_blank"); // Open PDF in new tab
+    } catch (err: unknown) {
       console.error("Error generating report:", err);
-      setError("Error generating report");
+      setError(err instanceof Error ? err.message : "Error generating report");
     } finally {
       setLoading(false);
     }

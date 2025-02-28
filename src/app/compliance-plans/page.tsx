@@ -4,9 +4,18 @@
 import { useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 
+interface CompliancePlan {
+  id?: string;  // Optional since it might be assigned by the backend
+  industry: string;
+  tasks: {
+    description: string;
+    completed: boolean;
+  }[];
+}
+
 export default function CompliancePlansPage() {
   const { getToken } = useAuth();
-  const [plan, setPlan] = useState<any>(null);
+  const [plan, setPlan] = useState<CompliancePlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,9 +49,9 @@ export default function CompliancePlansPage() {
 
       const data = await res.json();
       setPlan(data.compliancePlan);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error creating compliance plan:", err);
-      setError("Error creating compliance plan");
+      setError(err instanceof Error ? err.message : "Error creating compliance plan");
     } finally {
       setLoading(false);
     }
