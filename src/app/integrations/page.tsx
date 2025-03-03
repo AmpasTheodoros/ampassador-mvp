@@ -25,9 +25,9 @@ export default function IntegrationsPage() {
       if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
       const data = await res.json();
       setIntegrations(data.integrations || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching integrations:", err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : "Error fetching integrations");
     } finally {
       setLoading(false);
     }
