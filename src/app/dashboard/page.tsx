@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback  } from "react";
 import { useAuth, useUser, SignOutButton } from "@clerk/nextjs";
 import { syncUser } from "@/lib/syncUser"; // Adjust path as necessary
+import { useOnboardingGuard } from "@/hooks/useOnboardingGuard";
 
 interface Task {
   id: string;
@@ -16,13 +17,25 @@ interface CompliancePlan {
   tasks: Task[]; // adjust based on your data structure
 }
 
+interface ComplianceAlert {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+}
+
 export default function Dashboard() {
+  useOnboardingGuard(); // This will redirect if onboarding is incomplete
+
   const { getToken } = useAuth();
   const { user } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [plan, setPlan] = useState<CompliancePlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [alerts, setAlerts] = useState<ComplianceAlert[]>([]);
+  const [loadingAlerts, setLoadingAlerts] = useState<boolean>(true);
+  const [alertError, setAlertError] = useState<string | null>(null);
 
   useEffect(() => {
     async function runSync() {
@@ -61,6 +74,30 @@ export default function Dashboard() {
       setError(err instanceof Error ? err.message : String(err));
     }
   }, [getToken]);
+
+  const fetchAlerts = useCallback(async () => {
+    try {
+      const token = await getToken();
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/alerts`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
+      const data = await res.json();
+      setAlerts(data.alerts || []);
+    } catch (err: unknown) {
+      console.error("Error fetching alerts:", err);
+      setAlertError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLoadingAlerts(false);
+    }
+  }, [getToken]);
+
+    // Optionally, poll for alerts every 5 minutes.
+    useEffect(() => {
+      fetchAlerts();
+      const interval = setInterval(fetchAlerts, 5 * 60 * 1000);
+      return () => clearInterval(interval);
+    }, [fetchAlerts]);
 
   useEffect(() => {
     async function loadData() {
@@ -120,6 +157,26 @@ export default function Dashboard() {
           <p>No compliance plan created yet.</p>
         )}
       </section>
+      
+      {/* Alerts Section */}
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-2">Compliance Alerts</h2>
+        {loadingAlerts && <p>Loading alerts...</p>}
+        {alertError && <p className="text-red-600">{alertError}</p>}
+        {alerts.length === 0 ? (
+          <p>No new alerts at this time.</p>
+        ) : (
+          <ul className="space-y-4">
+            {alerts.map((alert) => (
+              <li key={alert.id} className="border p-4 rounded shadow">
+                <h3 className="font-bold">{alert.title}</h3>
+                <p>{alert.description}</p>
+                <small>{new Date(alert.date).toLocaleString()}</small>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Available Templates &amp; Reports</h2>
@@ -132,6 +189,7 @@ export default function Dashboard() {
           </a>
         </div>
       </section>
+      
     </div>
   );
 }
