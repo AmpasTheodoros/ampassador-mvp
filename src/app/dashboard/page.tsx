@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback  } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAuth, useUser, SignOutButton } from "@clerk/nextjs";
-import { syncUser } from "@/lib/syncUser"; // Adjust path as necessary
 import { useOnboardingGuard } from "@/hooks/useOnboardingGuard";
 
 interface Task {
@@ -14,7 +13,7 @@ interface Task {
 interface CompliancePlan {
   id: string;
   industry: string;
-  tasks: Task[]; // adjust based on your data structure
+  tasks: Task[];
 }
 
 interface ComplianceAlert {
@@ -24,91 +23,126 @@ interface ComplianceAlert {
   date: string;
 }
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const DASHBOARD_DATA_KEY = "dashboard_data";
+const DASHBOARD_TIMESTAMP_KEY = "dashboard_timestamp";
+
 export default function Dashboard() {
-  useOnboardingGuard(); // This will redirect if onboarding is incomplete
+  // Always call the hook at the top level.
+  const isOnboarding = useOnboardingGuard();
 
   const { getToken } = useAuth();
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [plan, setPlan] = useState<CompliancePlan | null>(null);
+  const [alerts, setAlerts] = useState<ComplianceAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [alerts, setAlerts] = useState<ComplianceAlert[]>([]);
-  const [loadingAlerts, setLoadingAlerts] = useState<boolean>(true);
-  const [alertError, setAlertError] = useState<string | null>(null);
+  const dataLoaded = useRef(false);
+
+  const fetchData = async (url: string) => {
+    try {
+      const token = await getToken();
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      });
+      if (response.status === 429) {
+        console.warn(`Rate limit hit for ${url}`);
+        return null;
+      }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (err) {
+      console.error(`Error fetching ${url}:`, err);
+      return null;
+    }
+  };
 
   useEffect(() => {
-    async function runSync() {
-      const result = await syncUser(getToken);
-      console.log("Sync result:", result);
-    }
-    runSync();
-  }, [getToken]);
-
-  const fetchTasks = useCallback(async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/onboarding/tasks`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
-      const data = await res.json();
-      setTasks(data.tasks || []);
-    } catch (err: unknown) {
-      console.error("Error fetching tasks:", err);
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  }, [getToken]);
-
-  const fetchCompliancePlan = useCallback(async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/compliance-plans`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
-      const data = await res.json();
-      setPlan(data.compliancePlans && data.compliancePlans[0] ? data.compliancePlans[0] : null);
-    } catch (err: unknown) {
-      console.error("Error fetching compliance plan:", err);
-      setError(err instanceof Error ? err.message : String(err));
-    }
-  }, [getToken]);
-
-  const fetchAlerts = useCallback(async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/alerts`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error(`Error ${res.status}: ${await res.text()}`);
-      const data = await res.json();
-      setAlerts(data.alerts || []);
-    } catch (err: unknown) {
-      console.error("Error fetching alerts:", err);
-      setAlertError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setLoadingAlerts(false);
-    }
-  }, [getToken]);
-
-    // Optionally, poll for alerts every 5 minutes.
-    useEffect(() => {
-      fetchAlerts();
-      const interval = setInterval(fetchAlerts, 5 * 60 * 1000);
-      return () => clearInterval(interval);
-    }, [fetchAlerts]);
-
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      await Promise.all([fetchTasks(), fetchCompliancePlan()]);
+    // Only load data once the user is loaded and not in onboarding
+    if (!isLoaded || !user || dataLoaded.current || isOnboarding) {
       setLoading(false);
+      return;
     }
-    loadData();
-  }, [fetchTasks, fetchCompliancePlan]);
 
-  if (loading) return <p>Loading dashboard...</p>;
+    const loadDashboardData = async () => {
+      setLoading(true);
+      try {
+        // Attempt to load cached dashboard data.
+        const cachedTimestamp = localStorage.getItem(DASHBOARD_TIMESTAMP_KEY);
+        const now = Date.now();
+        if (cachedTimestamp && now - parseInt(cachedTimestamp) < CACHE_DURATION) {
+          const cachedData = localStorage.getItem(DASHBOARD_DATA_KEY);
+          if (cachedData) {
+            const parsedData = JSON.parse(cachedData);
+            setTasks(parsedData.tasks || []);
+            setPlan(parsedData.plan || null);
+            setAlerts(parsedData.alerts || []);
+            dataLoaded.current = true;
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Fetch new data sequentially (with delays if needed)
+        const tasksResult = await fetchData(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/onboarding/tasks`
+        );
+        if (tasksResult) {
+          setTasks(tasksResult.tasks || []);
+        }
+
+        // (Optional: add a delay if necessary)
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const planResult = await fetchData(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/compliance-plans`
+        );
+        if (planResult) {
+          setPlan(planResult.compliancePlans?.[0] || null);
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const alertsResult = await fetchData(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/alerts`
+        );
+        if (alertsResult) {
+          setAlerts(alertsResult.alerts || []);
+        }
+
+        // Cache the fetched dashboard data
+        const dataToCache = {
+          tasks: tasksResult?.tasks || [],
+          plan: planResult?.compliancePlans?.[0] || null,
+          alerts: alertsResult?.alerts || [],
+        };
+        localStorage.setItem(DASHBOARD_DATA_KEY, JSON.stringify(dataToCache));
+        localStorage.setItem(DASHBOARD_TIMESTAMP_KEY, now.toString());
+
+        dataLoaded.current = true;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, [isLoaded, user, getToken, isOnboarding]);
+
+  // Moved the conditional rendering here, after all hooks have been called
+  if (isOnboarding) {
+    return <p>Checking onboarding status…</p>;
+  }
+
+  if (loading) return <p>Loading dashboard…</p>;
   if (error) return <p className="text-red-600">{error}</p>;
 
   return (
@@ -119,8 +153,10 @@ export default function Dashboard() {
       </header>
 
       <section className="mb-8">
-      <h2 className="text-2xl font-semibold">Welcome, {user?.fullName || user?.primaryEmailAddress?.emailAddress || "User"}</h2>        
-      <p>Your compliance journey for AI startups starts here.</p>
+        <h2 className="text-2xl font-semibold">
+          Welcome, {user?.fullName || user?.primaryEmailAddress?.emailAddress || "User"}
+        </h2>
+        <p>Your compliance journey for AI startups starts here.</p>
       </section>
 
       <section className="mb-8">
@@ -129,12 +165,7 @@ export default function Dashboard() {
           <ul className="space-y-2">
             {tasks.map((task) => (
               <li key={task.id} className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  readOnly
-                  className="mr-2"
-                />
+                <input type="checkbox" checked={task.completed} readOnly className="mr-2" />
                 <span className={task.completed ? "line-through text-gray-500" : ""}>
                   {task.description}
                 </span>
@@ -157,12 +188,9 @@ export default function Dashboard() {
           <p>No compliance plan created yet.</p>
         )}
       </section>
-      
-      {/* Alerts Section */}
+
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Compliance Alerts</h2>
-        {loadingAlerts && <p>Loading alerts...</p>}
-        {alertError && <p className="text-red-600">{alertError}</p>}
         {alerts.length === 0 ? (
           <p>No new alerts at this time.</p>
         ) : (
@@ -189,7 +217,6 @@ export default function Dashboard() {
           </a>
         </div>
       </section>
-      
     </div>
   );
 }
