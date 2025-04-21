@@ -1,22 +1,19 @@
-"use client"
 
-import { Button } from "./ui/button";
+"use client";
+
+import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
+import { useState } from "react";
+import { useLanguage } from "@/context/LanguageContext";
+import LanguageSelector from "./LanguageSelector";
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { UserButton } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 
 const Navigation: React.FC = () => {
-  const [isClient, setIsClient] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
+  const { t } = useLanguage();
+  const { isSignedIn } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
@@ -31,27 +28,29 @@ const Navigation: React.FC = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link href="#pricing" className="text-gray-600 hover:text-gray-900">
-              Pricing
+              {t('pricing')}
             </Link>
             <Link href="#about" className="text-gray-600 hover:text-gray-900">
-              About Us
+              {t('about')}
             </Link>
             <Link href="#services" className="text-gray-600 hover:text-gray-900">
-              Services
+              {t('services')}
             </Link>
             <Link href="#faq" className="text-gray-600 hover:text-gray-900">
-              FAQ
+              {t('faq')}
             </Link>
-            <Button>
+            <LanguageSelector />
+            <Button asChild>
               <Link href="/dashboard" className="flex items-center">
-                {true ? 'Dashboard' : 'Get Started'}
-              </Link>
+                {isSignedIn ? t('Dashboard') : t('getStarted') }
+              </Link> 
             </Button>
             <UserButton />
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-4">
+            <LanguageSelector />
             <Button
               variant="ghost"
               size="icon"
@@ -72,36 +71,34 @@ const Navigation: React.FC = () => {
                 className="text-gray-600 hover:text-gray-900 px-4 py-2"
                 onClick={() => setIsOpen(false)}
               >
-                Pricing
+                {t('pricing')}
               </Link>
               <Link
                 href="#about"
                 className="text-gray-600 hover:text-gray-900 px-4 py-2"
                 onClick={() => setIsOpen(false)}
               >
-                About Us
+                {t('about')}
               </Link>
               <Link
                 href="#services"
                 className="text-gray-600 hover:text-gray-900 px-4 py-2"
                 onClick={() => setIsOpen(false)}
               >
-                Services
+                {t('services')}
               </Link>
               <Link
                 href="#faq"
                 className="text-gray-600 hover:text-gray-900 px-4 py-2"
                 onClick={() => setIsOpen(false)}
               >
-                FAQ
+                {t('faq')}
               </Link>
               <div className="px-4">
-                <Button className="w-full">
-                  <Link
-                    href="/dashboard"
-                  >
-                    {true ? 'Dashboard' : 'Get Started'}
-                  </Link>
+                <Button className="w-full bg-primary hover:bg-primary-hover" asChild>
+                  <Link href="/dashboard" className="flex items-center">
+                    {isSignedIn ? t('Dashboard') : t('getStarted') }
+                  </Link> 
                 </Button>
               </div>
             </div>

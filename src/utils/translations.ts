@@ -28,6 +28,10 @@ type TranslationType = {
       en: "Get Started",
       gr: "Ξεκινήστε"
     },
+    "Dashboard": {
+      en: "Dashboard",
+      gr: "Πίνακας Ελέγχου"
+    },
     
     // CTA Section
     "readyToGetStarted": {
