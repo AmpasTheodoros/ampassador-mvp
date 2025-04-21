@@ -1,9 +1,13 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Shield, ArrowRight, FileCheck, Clock } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Shield, Zap, CheckCircle, ArrowRight, FileCheck, Clock } from "lucide-react";
+import { Button } from "./ui/button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const GetStarted = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="py-16 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4">
@@ -16,34 +20,34 @@ const GetStarted = () => {
           className="mb-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
-            Benefits That Drive Results
+            {t("benefitsDriveResults")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="p-6 bg-neutral-50 rounded-xl">
               <Shield className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Guaranteed Compliance
+                {t("guaranteedCompliance")}
               </h3>
               <p className="text-gray-600">
-                Stay ahead of regulations with our automated compliance monitoring and real-time updates.
+                {t("stayAhead")}
               </p>
             </div>
             <div className="p-6 bg-neutral-50 rounded-xl">
               <Clock className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Save 20+ Hours Monthly
+                {t("saveHours")}
               </h3>
               <p className="text-gray-600">
-                Automate manual compliance tasks and focus on growing your business instead.
+                {t("automateTasks")}
               </p>
             </div>
             <div className="p-6 bg-neutral-50 rounded-xl">
               <FileCheck className="w-12 h-12 text-primary mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                Audit-Ready Always
+                {t("auditReady")}
               </h3>
               <p className="text-gray-600">
-                Generate comprehensive reports instantly, ready for any compliance audit.
+                {t("generateInstantly")}
               </p>
             </div>
           </div>
@@ -58,24 +62,24 @@ const GetStarted = () => {
           className="mb-20"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">
-            Getting Started Is Simple
+            {t("gettingStartedSimple")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                step: '1',
-                title: 'Book a Demo',
-                description: 'Schedule a personalized demo with our compliance experts'
+                step: "1",
+                titleKey: "bookADemo",
+                descriptionKey: "scheduleDemo"
               },
               {
-                step: '2',
-                title: 'Quick Setup',
-                description: "We'll configure your compliance dashboard in under an hour"
+                step: "2",
+                titleKey: "quickSetup",
+                descriptionKey: "configureHour"
               },
               {
-                step: '3',
-                title: 'Go Live',
-                description: 'Start managing compliance with confidence'
+                step: "3",
+                titleKey: "goLive",
+                descriptionKey: "startManaging"
               }
             ].map((item, index) => (
               <div key={index} className="flex items-start gap-4">
@@ -83,8 +87,8 @@ const GetStarted = () => {
                   {item.step}
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t(item.titleKey)}</h3>
+                  <p className="text-gray-600">{t(item.descriptionKey)}</p>
                   {index < 2 && (
                     <ArrowRight className="w-6 h-6 text-primary mt-4 hidden md:block" />
                   )}
