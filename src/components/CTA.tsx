@@ -4,8 +4,11 @@ import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { Calendar } from 'lucide-react';
 import Image from 'next/image';
+import { useLanguage } from "@/context/LanguageContext";
 
 const CTA = () => {
+  const { t } = useLanguage();
+
   return (
     <section className="py-20 bg-neutral-50" >
       <div className="max-w-6xl mx-auto px-4">
@@ -17,17 +20,17 @@ const CTA = () => {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Ready to get started?
+              {t("readyToGetStarted")}
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Schedule a free consultation with our team and let&apos;s make things happen!
+              {t("scheduleConsultation")}
             </p>
             <Button 
               size="lg" 
-              className="text-lg px-8 py-6 h-auto bg-primary hover:bg-primary"
+              className="text-lg px-8 py-6 h-auto bg-blue-700 hover:bg-blue-800 text-white"
             >
               <Calendar className="mr-2 h-5 w-5" />
-              Book My Free Strategy Session
+              {t("bookSession")}
             </Button>
           </motion.div>
           
