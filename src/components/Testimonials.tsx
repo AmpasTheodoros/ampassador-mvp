@@ -1,7 +1,8 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Star } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Star } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 import Image from 'next/image';
 
 const testimonials = [
@@ -29,6 +30,68 @@ const testimonials = [
 ];
 
 const Testimonials = () => {
+  const { t, language } = useLanguage();
+
+  const testimonials =
+    language === "gr"
+      ? [
+          {
+            name: "Σάρα Τζόνσον",
+            role: "Διευθύνουσα Σύμβουλος στην TechStart",
+            content:
+              "Το Ampassador μετέτρεψε εντελώς τις διαδικασίες συμμόρφωσής μας. Ό,τι απαιτούσε μήνες τώρα γίνεται σε λίγες μέρες.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+          },
+          {
+            name: "Μιχαήλ Τσεν",
+            role: "Τεχνικός Διευθυντής στην DataFlow",
+            content:
+              "Οι ειδοποιήσεις με AI μας έχουν γλιτώσει αμέτρητες ώρες χειροκίνητου ελέγχου συμμόρφωσης.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+          },
+          {
+            name: "Έμιλυ Ροντρίγκες",
+            role: "Υπεύθυνη Συμμόρφωσης",
+            content:
+              "Η καλύτερη επένδυση για τις ανάγκες συμμόρφωσής μας. Τα πρότυπα είναι ανεκτίμητα.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+          },
+        ]
+      : [
+          {
+            name: "Sarah Johnson",
+            role: "CEO at TechStart",
+            content:
+              "Ampassador transformed our compliance process. What used to take months now takes days.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+          },
+          {
+            name: "Michael Chen",
+            role: "CTO at DataFlow",
+            content:
+              "The AI-powered alerts have saved us countless hours of manual compliance checks.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+          },
+          {
+            name: "Emily Rodriguez",
+            role: "Compliance Officer",
+            content:
+              "Best investment we've made for our compliance needs. The templates are invaluable.",
+            rating: 5,
+            image:
+              "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop",
+          },
+        ];
   return (
     <section className="py-16 md:py-20 bg-gray-50">
       <div className="max-w-6xl mx-auto px-4">
@@ -40,10 +103,10 @@ const Testimonials = () => {
           className="text-center mb-12"
         >
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Loved by Compliance Teams
+            {t("lovedByTeams")}
           </h2>
           <p className="text-lg text-gray-600">
-            Join hundreds of companies that trust Ampassador
+            {t("joinCompanies")}
           </p>
         </motion.div>
 
