@@ -1,51 +1,86 @@
 'use client';
 
-import { Shield, Zap, FileCheck, Bell } from "lucide-react";
-
-const features = [
-  {
-    icon: Shield,
-    title: "Smart Onboarding",
-    description: "Industry-specific compliance flows that guide you step by step",
-  },
-  {
-    icon: FileCheck,
-    title: "Ready Templates",
-    description: "Pre-built templates for GDPR, HIPAA, and AI compliance",
-  },
-  {
-    icon: Bell,
-    title: "Real-time Alerts",
-    description: "Stay updated with regulatory changes and compliance deadlines",
-  },
-  {
-    icon: Zap,
-    title: "Instant Reports",
-    description: "Generate audit-ready reports with one click",
-  },
-];
+import { motion } from "framer-motion";
+import { Shield, FileCheck, Bell, BarChart, Zap, Lock } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Features = () => {
+  const { t } = useLanguage();
+
+  const features = [
+    {
+      icon: Shield,
+      titleKey: "smartCompliance",
+      descriptionKey: "aiCompliance",
+    },
+    {
+      icon: FileCheck,
+      titleKey: "readyTemplates",
+      descriptionKey: "industryTemplates",
+    },
+    {
+      icon: Bell,
+      titleKey: "realTimeAlerts",
+      descriptionKey: "stayUpdated",
+    },
+    {
+      icon: BarChart,
+      titleKey: "auditReports",
+      descriptionKey: "generateReports",
+    },
+    {
+      icon: Zap,
+      titleKey: "fastSetup",
+      descriptionKey: "getStartedMinutes",
+    },
+    {
+      icon: Lock,
+      titleKey: "dataSecurity",
+      descriptionKey: "enterpriseSecurity",
+    },
+  ];
+
   return (
     <div className="py-20 bg-gray-50" id="services">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-up">
-          <h2 className="text-3xl font-bold mb-4">Everything you need</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Powerful features to help you manage compliance with confidence
-          </p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+          >
+            {t("everythingForCompliance")}
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
+          >
+            {t("powerfulFeatures")}
+          </motion.p>
         </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className="glass-card p-6 rounded-xl hover:scale-105 transition-transform duration-300 animate-fade-up"
-              style={{ animationDelay: `${index * 100}ms` }}
+            <motion.div
+              key={feature.titleKey}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100"
             >
-              <feature.icon className="h-10 w-10 text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
+              <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center mb-4">
+                <feature.icon className="w-6 h-6 text-blue-700" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                {t(feature.titleKey)}
+              </h3>
+              <p className="text-gray-600">{t(feature.descriptionKey)}</p>
+            </motion.div>
           ))}
         </div>
       </div>
