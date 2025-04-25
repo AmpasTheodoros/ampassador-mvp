@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { useLanguage } from "@/context/LanguageContext";
+import Link from 'next/link';
 
 const CTA = () => {
   const { t } = useLanguage();
@@ -25,13 +26,19 @@ const CTA = () => {
             <p className="text-xl text-gray-600 mb-8">
               {t("scheduleConsultation")}
             </p>
-            <Button 
-              size="lg" 
-              className="text-lg px-8 py-6 h-auto bg-blue-700 hover:bg-blue-800 text-white"
-            >
-              <Calendar className="mr-2 h-5 w-5" />
-              {t("bookSession")}
-            </Button>
+            <Link
+              href="https://cal.com/theodoros-ampas/30min"
+              target="_blank"
+              rel="noopener noreferrer"
+              >
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 h-auto w-full sm:w-auto min-w-[200px] border-2"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                {t("bookSession")}
+              </Button>
+            </Link>
           </motion.div>
           
           <motion.div

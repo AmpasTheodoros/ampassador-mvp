@@ -3,7 +3,7 @@ import Features from "../components/Features";
 import Pricing from "../components/Pricing";
 import Problem from "../components/Problem";
 import Solution from "../components/Solution";
-import Testimonials from "../components/Testimonials";
+// import Testimonials from "../components/Testimonials";
 import FAQ from "../components/FAQ";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
@@ -17,7 +17,7 @@ export default function Home() {
       <Solution />
       <GetStarted />
       <Features />
-      <Testimonials />
+      {/* <Testimonials /> */}
       <Pricing />
       <FAQ />
       <CTA />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useAuth, useUser, SignOutButton } from "@clerk/nextjs";
 import { useOnboardingGuard } from "@/hooks/useOnboardingGuard";
 
@@ -40,7 +40,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const dataLoaded = useRef(false);
 
-  const fetchData = async (url: string) => {
+  const fetchData = useCallback(async (url: string) => {
     try {
       const token = await getToken();
       const response = await fetch(url, {
@@ -62,7 +62,7 @@ export default function Dashboard() {
       console.error(`Error fetching ${url}:`, err);
       return null;
     }
-  };
+  }, [getToken]);
 
   useEffect(() => {
     // Only load data once the user is loaded and not in onboarding
@@ -135,7 +135,7 @@ export default function Dashboard() {
     };
 
     loadDashboardData();
-  }, [isLoaded, user, getToken, isOnboarding]);
+  }, [isLoaded, user, isOnboarding, fetchData]);
 
   // Moved the conditional rendering here, after all hooks have been called
   if (isOnboarding) {

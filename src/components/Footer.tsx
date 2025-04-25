@@ -5,7 +5,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import Link from "next/link";
 
 const Footer = () => {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
 
   // Translated content for Greek
   const companyName = "Ampassador";

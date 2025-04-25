@@ -81,8 +81,8 @@ type TranslationType = {
       gr: "Βαθμολογία 4.9/5"
     },
     "companiesTrustUs": {
-      en: "500+ Companies Trust Us",
-      gr: "500+ Εταιρείες μας Εμπιστεύονται"
+      en: "5+ Companies Trust Us",
+      gr: "5+ Εταιρείες μας Εμπιστεύονται"
     },
     
     // Problem Section

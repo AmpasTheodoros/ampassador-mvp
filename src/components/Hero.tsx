@@ -7,11 +7,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Star } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Hero() {
   const { t, language } = useLanguage();
-  const isMobile = useIsMobile();
 
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center px-4 py-12 md:py-20 overflow-hidden bg-gradient-to-b from-purple-50 to-white">
@@ -85,9 +83,9 @@ export default function Hero() {
                 <Star className="w-5 h-5" />
                 <span className="font-medium">{t("rating")}</span>
               </div>
-              <div className="text-gray-600 font-medium">
+              {/* <div className="text-gray-600 font-medium">
                 {t("companiesTrustUs")}
-              </div>
+              </div> */}
             </div>
           </motion.div>
         </motion.div>

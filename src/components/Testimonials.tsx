@@ -5,29 +5,29 @@ import { Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Image from 'next/image';
 
-const testimonials = [
-  {
-    name: 'Sarah Johnson',
-    role: 'CEO at TechStart',
-    content: 'Ampassador transformed our compliance process. What used to take months now takes days.',
-    rating: 5,
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop',
-  },
-  {
-    name: 'Michael Chen',
-    role: 'CTO at DataFlow',
-    content: 'The AI-powered alerts have saved us countless hours of manual compliance checks.',
-    rating: 5,
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
-  },
-  {
-    name: 'Emily Rodriguez',
-    role: 'Compliance Officer',
-    content: 'Best investment we\'ve made for our compliance needs. The templates are invaluable.',
-    rating: 5,
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
-  },
-];
+// const testimonials = [
+//   {
+//     name: 'Sarah Johnson',
+//     role: 'CEO at TechStart',
+//     content: 'Ampassador transformed our compliance process. What used to take months now takes days.',
+//     rating: 5,
+//     image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop',
+//   },
+//   {
+//     name: 'Michael Chen',
+//     role: 'CTO at DataFlow',
+//     content: 'The AI-powered alerts have saved us countless hours of manual compliance checks.',
+//     rating: 5,
+//     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop',
+//   },
+//   {
+//     name: 'Emily Rodriguez',
+//     role: 'Compliance Officer',
+//     content: 'Best investment we\'ve made for our compliance needs. The templates are invaluable.',
+//     rating: 5,
+//     image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop',
+//   },
+// ];
 
 const Testimonials = () => {
   const { t, language } = useLanguage();

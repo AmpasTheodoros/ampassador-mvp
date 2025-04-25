@@ -1,8 +1,7 @@
 'use client';
 
 import { motion } from "framer-motion";
-import { Shield, Zap, CheckCircle, ArrowRight, FileCheck, Clock } from "lucide-react";
-import { Button } from "./ui/button";
+import { Shield, ArrowRight, FileCheck, Clock } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const GetStarted = () => {
